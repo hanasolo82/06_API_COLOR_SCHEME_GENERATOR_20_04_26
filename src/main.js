@@ -1,60 +1,105 @@
-import './style.css'
-import javascriptLogo from './assets/javascript.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import { setupCounter } from './counter.js'
+import convert from "color-convert"
 
-document.querySelector('#app').innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${javascriptLogo}" class="framework" alt="JavaScript logo"/>
-    <img src="${viteLogo}" class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.js</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
 
-<div class="ticks"></div>
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src="${viteLogo}" alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-          <img class="button-icon" src="${javascriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
 
-<div class="ticks"></div>
-<section id="spacer"></section>
-`
+const body = document.querySelector("body")
+function renderBody() {
 
-setupCounter(document.querySelector('#counter'))
+  return body.innerHTML = ` 
+      <header class="header">
+        <form class="form">
+          <label for="colour">COLOR</label>
+          <input
+            class="input-color"
+            name="color"
+            id="color"
+            placeholder="choose the color"
+            type="text"
+            minlength="6"
+            required
+          >
+          <button type="button" id="btnAPIrequest">GET</button>
+        </form>
+      </header>
+      <main></main>
+      <footer></footer>`
+}
+renderBody() 
+//--------HTML-----elemenst
+const inputEl = document.getElementById("color")
+const mainDomEl = document.querySelector("main")
+const btnGet = document.getElementById("btnAPIrequest")
+//------------URL----------------------------------- 
+const BaseUrl = "https://www.thecolorapi.com/"
+const getRgb =  "id?rgb="
+const getHex =  "id?hex="
+//---- conver verbal color to other formats-------------
+const newValue = inputEl.value.trim().toLowerCase()
+//const rgbPattern = convert.keyword.rgb(newValue).join(",") 
+//const hexPattern = convert.keyword.hex(newValue)
+
+let timeOut //reinicia timeout
+let targetValue = ''
+function targetInput(e) {
+  clearTimeout(timeOut)
+
+  timeOut = setTimeout(()=>{
+    targetValue = e.target.value.trim().toLowerCase()
+
+    console.log(targetValue)
+  }, 2000)
+  
+}
+inputEl.addEventListener("input", targetInput)
+  
+
+
+
+ function getApiColor() {
+    
+    if(targetInput.length >= 6){
+      fetch(`https://www.thecolorapi.com/id?rgb=${targetInput}`)
+      .then(res => res.json())
+      .then(data => { console.log(data)
+        //  handleColor(data)
+        //  getSheme(colorPattern, "monochrome", 3)
+    })
+     console.log("saved correctly")
+    }
+  }
+/*
+  function getSheme(rgb, mode, count) {
+   
+    if(rgb){
+    fetch(`https://www.thecolorapi.com/scheme?rgb=${rgb}&mode=${mode}&count=${count}`)
+    .then(res => res.json())
+    .then(data => {
+       
+     return  mainDomEl.innerHTML = `
+              <div>
+                  <ul>
+                  ${data.colors.map((color) => {  
+                    return`
+                    <li >
+                      <image src="${color.image.bare}">
+                      <p>${color.name.value}</p>
+                    </li>
+                  `}).join("")}
+                  </ul>
+              </div>`
+    })
+    }
+  }
+
+
+function handleColor(colorChosen) {
+  if(colorChosen) {
+    console.log("you" + colorChosen.name.value)
+    console.log('pushing data ok')
+  }
+
+}
+btnGet.addEventListener("click", getApiColor)
+
+*/
