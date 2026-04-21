@@ -10,7 +10,7 @@ function renderBody() {
             class="input-color"
             name="color"
             id="color"
-            placeholder="choose the color"
+            placeholder="Try It"
             type="text"
             minlength="6"
             required
@@ -25,7 +25,7 @@ function renderBody() {
             <option value="triad">triad</option>
             <option value="quad">quad</option>
           </select>
-          <button type="button" id="btnAPIrequest">GET</button>
+          <button type="button" id="btnAPIrequest">Get color scheme</button>
       </header>
       <main></main>
       <footer></footer>`
@@ -45,17 +45,17 @@ const getHex =  "id?hex="
 //listeners
 btnGet.addEventListener("click", handleRequest) // render
 
-let timeOut //reinicia timeout
+
 
 function handleRequest() {
   
     const color = inputEl.value.trim().toLowerCase()
     const mode = selecEl.value
     if (color.length < 6) {
-    alert("Introduce un color válido (mínimo 6 caracteres numeral)")
-    return
-  }
-    getApiColor(color, mode, 4)
+      alert("Introduce un color válido (mínimo 6 caracteres numeral)")
+        return
+      }
+    getApiColor(color, mode, 6)
     
 
 }
@@ -84,13 +84,13 @@ function handleRequest() {
 
 function renderColors(color) {
   return  mainDomEl.innerHTML = `
-              <div>
+              <div class="colors-container">
                   <ul>
                   ${color.colors.map((color) => {  
                     return`
-                    <li >
-                      <image src="${color.image.bare}">
-                      <p>${color.name.value}</p>
+                    <li>
+                      <image class="scheme-img" src="${color.image.bare}">
+                      <p>${color.hex.value}</p>
                     </li>
                   `}).join("")}
                   </ul>
