@@ -1,15 +1,11 @@
 import convert from "color-convert"
 
-
-
-
 const body = document.querySelector("body")
 function renderBody() {
 
   return body.innerHTML = ` 
       <header class="header">
-        <form class="form">
-          <label for="colour">COLOR</label>
+          
           <input
             class="input-color"
             name="color"
@@ -19,67 +15,78 @@ function renderBody() {
             minlength="6"
             required
           >
+          <select id="mode" name="name">
+            <option value="monochrome">monochrome</option>
+            <option value="monochrome-dark">monochrome-dark</option>
+            <option value="monochrome-light">monochrome-light</option>
+            <option value="analogic">analogic</option>
+            <option value="complement">complement</option>
+            <option value="analogic-complement">analogic-complement</option>
+            <option value="triad">triad</option>
+            <option value="quad">quad</option>
+          </select>
           <button type="button" id="btnAPIrequest">GET</button>
-        </form>
       </header>
       <main></main>
       <footer></footer>`
 }
 renderBody() 
 //--------HTML-----elemenst
+
 const inputEl = document.getElementById("color")
 const mainDomEl = document.querySelector("main")
 const btnGet = document.getElementById("btnAPIrequest")
+const selecEl = document.getElementById("mode") 
+
 //------------URL----------------------------------- 
 const BaseUrl = "https://www.thecolorapi.com/"
-const getRgb =  "id?rgb="
 const getHex =  "id?hex="
-//---- conver verbal color to other formats-------------
-const newValue = inputEl.value.trim().toLowerCase()
-//const rgbPattern = convert.keyword.rgb(newValue).join(",") 
-//const hexPattern = convert.keyword.hex(newValue)
+
+//listeners
+btnGet.addEventListener("click", handleRequest) // render
 
 let timeOut //reinicia timeout
-let targetValue = ''
-function targetInput(e) {
-  clearTimeout(timeOut)
 
-  timeOut = setTimeout(()=>{
-    targetValue = e.target.value.trim().toLowerCase()
-
-    console.log(targetValue)
-  }, 2000)
+function handleRequest() {
   
-}
-inputEl.addEventListener("input", targetInput)
-  
-
-
-
- function getApiColor() {
-    
-    if(targetInput.length >= 6){
-      fetch(`https://www.thecolorapi.com/id?rgb=${targetInput}`)
-      .then(res => res.json())
-      .then(data => { console.log(data)
-        //  handleColor(data)
-        //  getSheme(colorPattern, "monochrome", 3)
-    })
-     console.log("saved correctly")
-    }
+    const color = inputEl.value.trim().toLowerCase()
+    const mode = selecEl.value
+    if (color.length < 6) {
+    alert("Introduce un color válido (mínimo 6 caracteres numeral)")
+    return
   }
-/*
-  function getSheme(rgb, mode, count) {
-   
-    if(rgb){
-    fetch(`https://www.thecolorapi.com/scheme?rgb=${rgb}&mode=${mode}&count=${count}`)
-    .then(res => res.json())
-    .then(data => {
+    getApiColor(color, mode, 4)
+    
+
+}
+
+// API FUNCTIONS----------------------------
+ function getApiColor(color, mode, numb) {
+    
+    if(color.length >= 6){
+      fetch(BaseUrl + getHex + color)
+      .then(res => res.json())
+        .then(data => { 
+          colorPlaceHolder(data)
        
-     return  mainDomEl.innerHTML = `
+            fetch(`${BaseUrl}scheme?hex=${color}&mode=${mode}&count=${numb}`)
+              .then(res => res.json())
+                .then(data => {
+                  renderColors(data)
+                  })
+        })
+     } 
+  }
+  function colorPlaceHolder(color) {
+    inputEl.style.backgroundColor = color.name.closest_named_hex
+    inputEl.style.color = color.contrast.value
+   }
+
+function renderColors(color) {
+  return  mainDomEl.innerHTML = `
               <div>
                   <ul>
-                  ${data.colors.map((color) => {  
+                  ${color.colors.map((color) => {  
                     return`
                     <li >
                       <image src="${color.image.bare}">
@@ -88,18 +95,4 @@ inputEl.addEventListener("input", targetInput)
                   `}).join("")}
                   </ul>
               </div>`
-    })
-    }
-  }
-
-
-function handleColor(colorChosen) {
-  if(colorChosen) {
-    console.log("you" + colorChosen.name.value)
-    console.log('pushing data ok')
-  }
-
 }
-btnGet.addEventListener("click", getApiColor)
-
-*/
